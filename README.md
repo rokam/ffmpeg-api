@@ -18,6 +18,10 @@ FFMPEG API is provided as Docker image for easy consumption. [See the use cases 
 * `POST /convert/audio/to/wav` - Convert audio file in request body to wav. Returns wav-file.
 * `POST /convert/video/to/mp4` - Convert video file in request body to mp4. Returns mp4-file.
 * `POST /convert/image/to/jpg` - Convert image file to jpg. Returns jpg-file.
+* `POST /speed/audio/:speed` - Speed up audio. Return audio file.
+* `POST /speed/audio/:speed/mp3` - Speed up audio. Returns mp3-file.
+* `POST /speed/audio/:speed/ogg` - Speed up audio. Returns ogg-file.
+* `POST /speed/audio/:speed/wav` - Speed up audio. Returns wav-file.
 * `POST /video/extract/audio` - Extract audio track from POSTed video file. Returns audio track as 1-channel wav-file.
   * Query param: `mono=no` - Returns audio track, all channels.
 * `POST /video/extract/images` - Extract images from POSTed video file as PNG. Default FPS is 1. Returns JSON that includes download links to extracted images.
