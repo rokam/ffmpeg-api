@@ -38,6 +38,10 @@ app.use('/video/extract', extract);
 var probe = require('./routes/probe.js');
 app.use('/probe', probe);
 
+//routes to speed file info
+var speed = require('./routes/speed.js');
+app.use('/speed', speed);
+
 require('express-readme')(app, {
     filename: 'index.md',
     routes: ['/'],

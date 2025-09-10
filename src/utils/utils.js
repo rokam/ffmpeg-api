@@ -37,8 +37,13 @@ function downloadFile (filepath,filename,req,res,next) {
 
 }
 
+function getFileExtension (filename) {
+    return filename.split('.').pop();
+}
+
 
 module.exports = {
     deleteFile,
-    downloadFile
+    downloadFile,
+    getFileExtension
 }
