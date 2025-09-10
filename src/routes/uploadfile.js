@@ -18,7 +18,7 @@ router.use(function (req, res,next) {
         let hitLimit = false;
         let fileName = '';
         var savedFile = uniqueFilename('/tmp/');
-        let busboy = new Busboy({
+        let busboy = Busboy({
             headers: req.headers,
             limits: {
                 fields: 0, //no non-files allowed
@@ -37,42 +37,42 @@ router.use(function (req, res,next) {
         });
 
         busboy.on('file', function(
-            fieldname,
-            file,
-            filename,
-            encoding,
-            mimetype
+            name,
+            stream,
+            info,
         ) {
-            file.on('limit', function(file) {
+            console.log('name', name);
+            console.log('info', info);
+            stream.on('limit', function(file) {
+                console.log('file', file);
                 hitLimit = true;
-                let msg = `${filename} exceeds max size limit. max file size ${fileSizeLimit} bytes.`
+                let msg = `${name} exceeds max size limit. max file size ${fileSizeLimit} bytes.`
                 logger.error(msg);
                 res.writeHead(500, {'Connection': 'close'});
                 res.end(JSON.stringify({error: msg}));
             });
             let log = {
-                file: filename,
-                encoding: encoding,
-                mimetype: mimetype,
+                file: info.filename,
+                encoding: info.encoding,
+                mimetype: info.mimeType,
             };
             logger.debug(`file:${log.file}, encoding: ${log.encoding}, mimetype: ${log.mimetype}`);
-            file.on('data', function(data) {
+            stream.on('data', function(data) {
                 bytes += data.length;
             });
-            file.on('end', function(data) {
+            stream.on('end', function(data) {
                 log.bytes = bytes;
                 logger.debug(`file: ${log.file}, encoding: ${log.encoding}, mimetype: ${log.mimetype}, bytes: ${log.bytes}`);
             });
-
-            fileName = filename;
-            savedFile = savedFile + "-" + fileName;
-            logger.debug(`uploading ${fileName}`)
-            let written = file.pipe(fs.createWriteStream(savedFile));
+            fileName = info.filename;
+            savedFile = savedFile + "-" + info.filename;
+            logger.debug(`uploading ${info.filename}`)
+            let written = stream.pipe(fs.createWriteStream(savedFile));
             if (written) {
-                logger.debug(`${fileName} saved, path: ${savedFile}`)
+                logger.debug(`${info.filename} saved, path: ${savedFile}`)
             }
         });
-        busboy.on('finish', function() {
+        busboy.on('close', function() {
             if (hitLimit) {
                 utils.deleteFile(savedFile);
                 return;
